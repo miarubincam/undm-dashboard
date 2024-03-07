@@ -1,73 +1,115 @@
-# University of Nebraska - Lincoln Dance Marathon Dashboard
-This repository represents a dashboard for the UNL dance marathon event day.
+# 💃 Dance Marathon Live Donation Dashboard 🕺
+This repository contains a template dashboard for tracking live donations during a Dance Marathon event. Data is pulled directly from DonorDrive.
 
-# Getting Started with Create React App
+Below, find general directions for customizing the dashboard for your Dance Marathon event, as well as instructions for running the dashboard locally or hosted on GitHub pages.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+To view a paused example, check out [huntergodina.github.io](huntergodina.github.io/undm-dashboard).
 
-## Available Scripts
+⚠️ _Note: some of the styling for the donation table is manually sized and configured to fit on common event displays, such as large TVs, projectors, or compute monitors. The CSS and styling will require significant tuning for mobile devices or non-traditional aspect ratios._
 
-In the project directory, you can run:
+## ✅ Getting Started
+Welcome to the Dance Marathon live donation dashboard. This started as a passion project, written as a spur of the moment solution for driving interaction with donations at the University of Nebraska-Lincoln Huskerthon event in 2022. I published this repository in an effort to let other Dance Marathon events use our approach.
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 💻 Running The App
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+This dashboard is configured to use the `gh-pages` React [plugin](https://github.com/gitname/react-gh-pages), which allows publishing directly to the `{username}.github.io` free, provisioned GitHub page for the user that forks this repository.
 
-### `npm test`
+#### Necessary tools
+- Ensure you've installed [npm and Node](https://nodejs.org/en/download/) to be able to utilize plugins and dependencies of this project
+- Ensure you've configured [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) locally, and connected to a remote GitHub account (please fork this repo into your own version, I will not merge any PRs for specific events)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#### Clone the repository
+In your terminal of choice, run
+```
+git clone git@github.com:{your-username}/{your-repository-name}.git
+```
+to clone your forked version of the code onto your local machine.
 
-### `npm run build`
+Once cloned, switch into the repository folder with
+```
+cd {your-repository-name}
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### Modify the homepage path
+In the `package.json` file, modify the `homepage` property, and replace my `huntergodina` username with your own (as well as your own preferred URL path).
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+#### Deploy your changes
+Run `npm run deploy` in your terminal. This script will build your current code, and deploy it to GitHub for display on your site.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+You will be able to view your changes at the URL provided in the `package.json` file under `homepage`.
 
-### `npm run eject`
+#### Local development
+If you don't want to wait for repeated builds and deploys while testing your code, you can run the website locally. Run `npm run start` in your terminal to start a development version of the application on your machine. You can then access it at [http://localhost:3000](http://localhost:3000) in your browser of choice. It will live update with any changes you make as you save the pertinent files.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
+## 🛎 Modifying Core Components
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+#### Update your DonorDrive event ID
+Modify [this line](https://github.com/huntergodina/undm-dashboard/blob/c55245b1622097c554b82ef55e96bdb33b8324cd/src/Dashboard.js#L32) to use your group's event ID in the DonorDrive URL. Example:
+```
+https://events.dancemarathon.com/api/events/4589/donations?limit=5
+```
+can become
+```
+https://events.dancemarathon.com/api/events/1234/donations?limit=5
+```
+if your event ID is `1234`.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+#### Unpause polling of donations
+To avoid hammering the APIs for DonorDrive, I paused the auto-refresh of data for this dashboard - known as polling. The site is designed to fetch data every few seconds to keep the dashboard up to date. To re-enable this function, uncomment [this line](https://github.com/huntergodina/undm-dashboard/blob/c55245b1622097c554b82ef55e96bdb33b8324cd/src/Dashboard.js#L22). This will start the polling on whatever interval is defined [here](https://github.com/huntergodina/undm-dashboard/blob/c55245b1622097c554b82ef55e96bdb33b8324cd/src/Dashboard.js#L13) in milliseconds.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
+### 💸 Donation Table
+![Example Nebraska Huskerthon donation table](public/readme/donation-table.png)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+This simple table shows the five most recent donations, including the name and avatar set by the DonorDrive user, the amount donated, and the message attached to the donation. This data is pulled directly from DonorDrive with some small exceptions.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+#### Number of donations
+The logic for this is [here](https://github.com/huntergodina/undm-dashboard/blob/c55245b1622097c554b82ef55e96bdb33b8324cd/src/Dashboard.js#L32) in the query parameters for the donations. Simply change  
+```
+?limit=5
+```
+to any other number, within DonorDrive's limits, to expand this.
 
-### Code Splitting
+#### Profanity restrictions
+In the event that you are concerned about certain words appearing in donation messages, I have added very rudimentary filtering for manually checked words. Simply add undesirable words to [this list](https://github.com/huntergodina/undm-dashboard/blob/c55245b1622097c554b82ef55e96bdb33b8324cd/src/DonationRow.js#L1) and any messages containing them will be replaced with a warning.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 🚨 Big Donation Alert
+![Example big donation alert](public/readme/big-donation.png)
+This alert was added during our event to highlight any significant donations as they come in. As such, the logic is a bit rudimentary. Currently, the most recent donation, when polled and over a "big donation threshold", will appear as a brief pop-up.
 
-### Analyzing the Bundle Size
+#### Threshold Amount
+The threshold for the alerts for donations is set [here](https://github.com/huntergodina/undm-dashboard/blob/c55245b1622097c554b82ef55e96bdb33b8324cd/src/Dashboard.js#L37) when data is fetched after the polling interval. Change the current threshold value to the minimum you'd like to require to display this alert.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+#### Display Message
+The alert is configured currently to display `*Person* is a hero and raised $X!`. To change this, update the [display lambda](https://github.com/huntergodina/undm-dashboard/blob/c55245b1622097c554b82ef55e96bdb33b8324cd/src/Dashboard.js#L57) with your own message using the name and amount from DonorDrive.
 
-### Making a Progressive Web App
+#### Alert Background
+Our Huskerthon 2022 event was space themed, hence the star. If you wish to update the image, replace the file [reference](https://github.com/huntergodina/undm-dashboard/blob/c55245b1622097c554b82ef55e96bdb33b8324cd/src/App.css#L109).
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### ⏰ Countdown
+![Countdown to Dance Marathon event](public/readme/countdown.png)
+This general countdown displays below the donations, great for if you're raising money leading up to your main Dance Marathon event. and want to display a countdown to a specific time, day, etc.
 
-### Advanced Configuration
+#### Target date/time
+To change the target countdown date/time, modify the [date/time](https://github.com/huntergodina/undm-dashboard/blob/c55245b1622097c554b82ef55e96bdb33b8324cd/src/Dashboard.js#L65) to show your desired event time.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+#### "Until" message
+To change the `until Huskerthon blastoff` text, or emojis, modify the [message text](https://github.com/huntergodina/undm-dashboard/blob/c55245b1622097c554b82ef55e96bdb33b8324cd/src/Dashboard.js#L64-L67) in these `span`s.
 
-### Deployment
+### 🚀 Background GIF
+![Full background gif playing](public/readme/background.gif)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+To add a fun, live sensation to your dashboard, and increase the sensation that it is a living, breathing tracker for your Dance Marathon event, an animated background, or even still image.
 
-### `npm run build` fails to minify
+#### Change the image
+To change the image, simply change the CSS [background attribute](https://github.com/huntergodina/undm-dashboard/blob/c55245b1622097c554b82ef55e96bdb33b8324cd/src/App.css#L21) to your desired gif or image, and it will populate the background.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### 🧪 Experimental/Incomplete Features
+
+This was primarily built in the 12 hours of our 2022 Huskerthon event, during my senior year of college. As such, it has not been expanded upon since I graduated. Some things that I dove into, coding on the fly, didn't get finished because I was also enjoying the event. If you want to finish those things, this is where I would start:
+
+- [ ] Support multiple "big donation" alert messages. Our event wasn't getting large donations fast enough to devote time to supporting multiple names/amounts on our alert. As such, I lazily just used the most recent "big" donation.
+- [ ] Re-enable team leaderboards. I don't really remember why I disabled the [Leaderboard](https://github.com/huntergodina/undm-dashboard/blob/master/src/Leaderboard.js) component on the main [dashboard](https://github.com/huntergodina/undm-dashboard/blob/c55245b1622097c554b82ef55e96bdb33b8324cd/src/Dashboard.js#L70-L74), but for some reason I abandoned it. This was a fun way to encourage team competition.
